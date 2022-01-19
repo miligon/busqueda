@@ -1,5 +1,6 @@
 
 import threading
+import time
 
 class Agente:
 
@@ -33,7 +34,8 @@ class Agente:
         # Extrae el ultimo dato que se ingreso al buffer
         child = self.buffer_busqueda.pop()
         padre = self.padres.pop()
-        print("Pos_actual: ", self.pos, ", padre: ", self.padre)
+        print("explorando: ", child, ", padre: ", padre)
+        print(", Pos_actual: ", self.pos, ", padre_actual: ", self.padre)
         
         if (padre == self.pos):
             # Marca el lugar como visitado
@@ -47,7 +49,7 @@ class Agente:
             if (self.pos==self.final):
                 # Si ya llegué al destino final
                 print("\nLlegué a: ",self.final)
-                print(self.visitados)
+                print(self.ruta)
                 # Salgo de la función
                 return True
             
@@ -69,7 +71,9 @@ class Agente:
                             # Busqueda por profundidad
                             self.buffer_busqueda.append(node_child)
                             self.padres.append(child)
-                print("buffer: ",self.buffer_busqueda, "\n padres: ",self.padres,"\n visitados: ",self.visitados)
+                print(" buffer: ",self.buffer_busqueda, "\n padres: ",self.padres,"\n visitados: ",self.visitados)
+                print("ruta: ", self.ruta)
+                
         else:
             if (self.padre != child):
                 print("CAMBIO DE RAMA!")
@@ -77,38 +81,87 @@ class Agente:
                 # Regresa el dato al buffer
                 self.buffer_busqueda.append(child)
                 self.padres.append(padre)
-                self.ruta.pop() # Descarta ultimo lugar de la ruta, ya que no se ha movido
                 if (self.amplitud):
-                    # Agrega cada uno de los nodos hijos al inicio del buffer de busqueda
-                    # FIFO
-                    # Busqueda por amplitud
-                    self.buffer_busqueda.insert(0,"")
-                    self.padres.insert(0,child)
-                else:
-                    
-                    # LIFO
-                    # Busqueda por profundidad
+                    print("explorando: ", child, ", padre: ", padre)
+                    # Retroceso en el mapa en busqueda por amplitud
                     index = self.buffer_busqueda.index(child)+1
-                    while self.ruta[-1] != padre:
-                        l = self.ruta.pop()
-                        p = self.ruta[-1]
+                    ruta = self.ruta.copy()
+                    # Elimino el ultimo lugar de la ruta por que es la posicion actual del agente
+                    ruta.pop()
+                    # Agrego los lugares de la ruta por los que pase anteriormente
+                    # hasta llegar a un nodo antes del nodo padre de la rama a la 
+                    # que quiero saltar
+                    #print("ruta: ", ruta[len(ruta)-1], "padre", padre)
+                    if (padre in ruta):
+                        while ruta[len(ruta)-1] != padre:
+                            l = ruta.pop()
+                            if (len(ruta)>0):
+                                p = ruta[-1]
+                            else:
+                                p = ""
+                            self.buffer_busqueda.insert(index,l)
+                            self.padres.insert(index,p)
+
+                        # Agrega el nodo padre desde el que va a partir el agente de nuevo
+                        if (len(ruta)>0):
+                            l = ruta.pop()
+                            if (len(ruta)>0):
+                                p = ruta[-1]
+                            else:
+                                p = ""
+                            self.buffer_busqueda.insert(index,l)
+                            self.padres.insert(index,p)
+                    else:
+                        print("SE NECESITA AGREGAR NODOS HASTA LA PROFUNDIDAD")
+                        print(" buffer: ",self.buffer_busqueda, "\n padres: ",self.padres,"\n visitados: ",self.visitados)
+                        print(self.ruta,"\n")
+                        try:
+                            if (padre in mapa[self.padre] and self.padre == ruta[len(ruta)-1]):
+                                print("existen")
+                                self.buffer_busqueda.insert(index,self.padre)
+                                if (self.padre == self.inicio):
+                                    self.padres.insert(index,"")
+                                else:
+                                    print("no se que paso")
+                        except(KeyError):
+                            if (padre in mapa[self.pos]):
+                                print("existe2")
+                                self.buffer_busqueda.insert(index,padre)
+                                self.padres.insert(index,self.pos)
+                        print(" buffer: ",self.buffer_busqueda, "\n padres: ",self.padres,"\n visitados: ",self.visitados)
+                        print(self.ruta,"\n")
+                        #exit()
+                else:
+                    # Retroceso en el mapa en busqueda por profundidad
+                    index = self.buffer_busqueda.index(child)+1
+                    ruta = self.ruta.copy()
+                    # Elimino el ultimo lugar de la ruta por que es donde me encuentro
+                    ruta.pop()
+                    # Agrego los lugares de la ruta por lo que pase anteriormente
+                    # hasta llegar a un nodo antes del nodo padre de la rama a la 
+                    # que quiero saltar
+                    while ruta[-1] != padre:
+                        l = ruta.pop()
+                        p = ruta[-1]
                         self.buffer_busqueda.insert(index,l)
                         self.padres.insert(index,p)
 
                     # Agrega el nodo padre desde el que va a partir el agente de nuevo
-                    l = self.ruta.pop()
-                    if (len(self.ruta)>0):
-                        p = self.ruta[-1]
+                    l = ruta.pop()
+                    if (len(ruta)>0):
+                        p = ruta[-1]
                     else:
                         p = ""
                     self.buffer_busqueda.insert(index,l)
                     self.padres.insert(index,p)
-                print("buffer: ",self.buffer_busqueda, "\n padres: ",self.padres,"\n visitados: ",self.visitados)
-                #print(self.ruta,"\n")
+                print(" buffer: ",self.buffer_busqueda, "\n padres: ",self.padres,"\n visitados: ",self.visitados)
+                print(self.ruta,"\n")
             else:
                 self.pos = child
                 self.padre = padre
+                self.ruta.pop()
                 print("RETROCEDI A: ", self.pos)
+                print(" buffer: ",self.buffer_busqueda, "\n padres: ",self.padres,"\n visitados: ",self.visitados)
         print(self.ruta,"\n")
         return False
 
@@ -135,6 +188,7 @@ class Agente:
                 if (self.Search()):
                     print("Busqueda terminada")
                     return
+                time.sleep(0.2)
             
         else:
             print("Establezca inicio y final")
@@ -188,5 +242,5 @@ mapa2 = {"Arad":["Zerind","Sibiu","Timisoara"],
 agent = Agente(mapa2)
 agent.setInicio("Arad")
 agent.setFinal("Bucharest")
-#agent.setAmplitud()
+agent.setAmplitud()
 agent.runAgent()
