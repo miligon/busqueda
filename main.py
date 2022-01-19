@@ -196,8 +196,8 @@ mapa2 = {"Arad":["Sibiu","Timisoara","Zerind"],
 "Eforie":["Hirsova"]
 }
 
-agent = Agente(mapa)
+agent = Agente(mapa2)
 agent.setInicio("Arad")
-agent.setFinal("Bucharest")
+agent.setFinal("Eforie")
 #agent.setAmplitud()
 agent.runAgent()
