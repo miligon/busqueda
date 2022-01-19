@@ -9,6 +9,7 @@ def Search(inicio, final, mapa, amplitud=False):
     visitados = []
     child = []
     buffer_busqueda = []
+    padres = []
 
     # Establece la posicion inicial
     pos = inicio
@@ -16,16 +17,20 @@ def Search(inicio, final, mapa, amplitud=False):
     visitados.append(pos)
     # Carga los vecinos del nodo inicial al buffer
     buffer_busqueda = mapa[pos].copy()
+    padres= len(buffer_busqueda)*[pos]
+    print(padres, buffer_busqueda)
     # Realizará la busqueda mientras existan datos en el buffer
     while (len(buffer_busqueda)>0):
         #print(mapa)
         # Extrae el ultimo dato que se ingreso al buffer
         child = buffer_busqueda.pop()
-        print("Pos_actual: ", pos, ", Explorando: ", child)
+        padre = padres.pop()
+        print("Nodo: ", padre, ", Explorando: ", child)
 
         if child not in visitados:
             # Marca el lugar como visitado
             visitados.append(child)
+            # Avanza al nuevo hijo
             pos = child
             
             if (pos==final):
@@ -44,11 +49,13 @@ def Search(inicio, final, mapa, amplitud=False):
                         # FIFO
                         # Busqueda por amplitud
                         buffer_busqueda.insert(0,node_child)
+                        padres.insert(0,child)
                     else:
                         # Agrega cada uno de los nodos hijos al final del buffer de busqueda
                         # LIFO
                         # Busqueda por profundida
                         buffer_busqueda.append(node_child)
+                        padres.append(child)
         else:
             print("visitado anteriormente: ", child)
 
