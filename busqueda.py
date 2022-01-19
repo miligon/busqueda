@@ -13,6 +13,7 @@ def Search(inicio, final, mapa, amplitud=False):
 
     # Establece la posicion inicial
     pos = inicio
+    nodo_ant = ""
     # Agrega el inicial a visitados para excluirlo de la busqueda
     visitados.append(pos)
     # Carga los vecinos del nodo inicial al buffer
@@ -25,13 +26,17 @@ def Search(inicio, final, mapa, amplitud=False):
         # Extrae el ultimo dato que se ingreso al buffer
         child = buffer_busqueda.pop()
         padre = padres.pop()
-        print("Nodo: ", padre, ", Explorando: ", child)
-
+        
+        if (padre != pos):
+            print("Cambie de rama -> ", padre)
+        print("Nodo padre: ",padre, ", Explorando: ", child)
+        
         if child not in visitados:
             # Marca el lugar como visitado
             visitados.append(child)
             # Avanza al nuevo hijo
             pos = child
+            nodo_ant = padre
             
             if (pos==final):
                 # Si ya llegué al destino final
@@ -44,18 +49,19 @@ def Search(inicio, final, mapa, amplitud=False):
             # Si el nodo tiene hijos
             if len(node_children) != 0:
                 for node_child in node_children:
-                    if (amplitud):
-                        # Agrega cada uno de los nodos hijos al inicio del buffer de busqueda
-                        # FIFO
-                        # Busqueda por amplitud
-                        buffer_busqueda.insert(0,node_child)
-                        padres.insert(0,child)
-                    else:
-                        # Agrega cada uno de los nodos hijos al final del buffer de busqueda
-                        # LIFO
-                        # Busqueda por profundida
-                        buffer_busqueda.append(node_child)
-                        padres.append(child)
+                    if (node_child != padre and node_child not in visitados):
+                        if (amplitud):
+                            # Agrega cada uno de los nodos hijos al inicio del buffer de busqueda
+                            # FIFO
+                            # Busqueda por amplitud
+                            buffer_busqueda.insert(0,node_child)
+                            padres.insert(0,child)
+                        else:
+                            # Agrega cada uno de los nodos hijos al final del buffer de busqueda
+                            # LIFO
+                            # Busqueda por profundida
+                            buffer_busqueda.append(node_child)
+                            padres.append(child)
         else:
             print("visitado anteriormente: ", child)
 

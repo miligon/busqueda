@@ -1,7 +1,27 @@
 import busqueda
 
 
-
+mapa2 = {"Arad":["Timisoara","Zerind","Sibiu"],
+"Zerind":["Oradea","Arad"],
+"Oradea":["Zerind","Sibiu"],
+"Timisoara":["Lugoj","Arad"],
+"Lugoj":["Timisoara","Mehadia"],
+"Dobreta":["Mehadia","Craiova"],
+"Mehadia":["Lugoj","Dobreta"],
+"Sibiu":["Fagaras","Rimnicu Vilcea","Arad","Oradea"],
+"Fagaras":["Sibiu","Bucharest"],
+"Rimnicu Vilcea":["Sibiu","Pitesti","Craiova"],
+"Craiova":["Pitesti","Rimnicu Vilcea","Dobreta"],
+"Pitesti":["Rimnicu Vilcea","Craiova","Bucharest"],
+"Bucharest":["Fagaras","Pitesti","Giurgiu","Urziceni"],
+"Urziceni":["Bucharest","Hirsova","Vaslui"],
+"Vaslui":["Urziceni","Iasi"],
+"Iasi":["Neamt","Vaslui"],
+"Neamt":["Iasi"],
+"Hirsova":["Urziceni","Eforie"],
+"Eforie":["Hirsova"],
+"Giurgiu" :["Bucharest"],
+}
 
 mapa = {"Arad":["Zerind","Sibiu","Timisoara"],
 "Zerind":["Oradea"],
@@ -21,29 +41,11 @@ mapa = {"Arad":["Zerind","Sibiu","Timisoara"],
 "Iasi":["Neamt"],
 "Neamt":[],
 "Hirsova":["Eforie"],
-"Eforie":[]
+"Eforie":[],
+"Giurgiu" :[],
 }
 
-mapa2 = {"Arad":["Timisoara","Zerind","Sibiu"],
-"Zerind":["Oradea","Arad"],
-"Oradea":["Zerind","Sibiu"],
-"Timisoara":["Lugoj","Arad"],
-"Lugoj":["Timisoara","Mehadia"],
-"Dobreta":["Mehadia","Craiova"],
-"Mehadia":["Lugoj","Dobreta"],
-"Sibiu":["Fagaras","Rimnicu Vilcea","Arad","Oradea"],
-"Fagaras":["Sibiu","Bucharest"],
-"Rimnicu Vilcea":["Sibiu","Pitesti","Craiova"],
-"Craiova":["Pitesti","Rimnicu Vilcea","Dobreta"],
-"Pitesti":["Rimnicu Vilcea","Craiova","Bucharest"],
-"Bucharest":["Fagaras","Pitesti","Giurgiu","Urziceni"],
-"Urziceni":["Bucharest","Hirsova","Vaslui"],
-"Vaslui":["Urziceni","Iasi"],
-"Iasi":["Neamt","Vaslui"],
-"Neamt":["Iasi"],
-"Hirsova":["Urziceni","Eforie"],
-"Eforie":["Hirsova"]
-}
+
 
 inicio = "Arad"
 final = "Bucharest"
