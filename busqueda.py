@@ -18,10 +18,10 @@ def Search(inicio, final, mapa, amplitud=False):
     buffer_busqueda = mapa[pos].copy()
     # Realizará la busqueda mientras existan datos en el buffer
     while (len(buffer_busqueda)>0):
-        print(mapa)
+        #print(mapa)
         # Extrae el ultimo dato que se ingreso al buffer
         child = buffer_busqueda.pop()
-        print("Explorando: ", child)
+        print("Pos_actual: ", pos, ", Explorando: ", child)
 
         if child not in visitados:
             # Marca el lugar como visitado
@@ -49,6 +49,8 @@ def Search(inicio, final, mapa, amplitud=False):
                         # LIFO
                         # Busqueda por profundida
                         buffer_busqueda.append(node_child)
+        else:
+            print("visitado anteriormente: ", child)
 
     print("Busqueda terminada")
 

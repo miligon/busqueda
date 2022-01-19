@@ -48,7 +48,7 @@ mapa2 = {"Arad":["Timisoara","Zerind","Sibiu"],
 inicio = "Arad"
 final = "Bucharest"
 print("\nBusqueda de profundidad\n")
-busqueda.profundidad(inicio,final,mapa2)
+busqueda.profundidad(inicio,final,mapa)
 
 print("\n\nBusqueda de amplitud\n")
-busqueda.amplitud(inicio,final,mapa2)
+busqueda.amplitud(inicio,final,mapa)
