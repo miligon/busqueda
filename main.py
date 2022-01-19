@@ -1,5 +1,4 @@
-import profundidad
-import amplitud
+import busqueda
 
 
 
@@ -9,6 +8,7 @@ mapa = {"Arad":["Zerind","Sibiu","Timisoara"],
 "Oradea":["Sibiu"],
 "Timisoara":["Lugoj"],
 "Lugoj":["Mehadia"],
+"Mehadia":["Dobreta"],
 "Dobreta":["Craiova"],
 "Sibiu":["Rimnicu Vilcea","Fagaras"],
 "Fagaras":["Bucharest"],
@@ -47,8 +47,8 @@ mapa2 = {"Arad":["Timisoara","Zerind","Sibiu"],
 
 inicio = "Arad"
 final = "Bucharest"
-#print("\nBusqueda de profundidad\n")
-#profundidad.DepthSearch(inicio,final,mapa2)
+print("\nBusqueda de profundidad\n")
+busqueda.profundidad(inicio,final,mapa2)
 
 print("\n\nBusqueda de amplitud\n")
-amplitud.BreadthSearch(inicio,final,mapa2)
+busqueda.amplitud(inicio,final,mapa2)
