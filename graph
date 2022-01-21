@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jan 20 19:23:17 2022
+
+@author: miguel
+"""
+import matplotlib.pyplot as plt
+
+class Graficador:
+    
+    def __init__(self):
+        self.ciudades = [[],[],[]]
+        self.caminos = [[[],[]]]
+        
+    def loadMap(self,mapa):        
+        plt.figure()
+        plt.subplot(211)
+        
+        # Obtiene las coordenadas de las ciudades
+        for ciudad in mapa:
+            coordenada = mapa[ciudad]['coord']
+            self.ciudades[0].append(coordenada[0])
+            self.ciudades[1].append(795-coordenada[1])
+            self.ciudades[2].append(ciudad)
+        
+        # Grafica las ciudades
+        plt.scatter(self.ciudades[0], self.ciudades[1],
+                           zorder=1000, s=40, color='black')   
+        
+        # Obtiene las conexiones entre ciudades
+        for ciudad in mapa:
+            #Extrae los datos de cada ciudad
+            vecinos = mapa[ciudad]['nodes']
+            i_ciudad = self.ciudades[2].index(ciudad)
+            x0 = self.ciudades[0][i_ciudad]
+            y0 = self.ciudades[1][i_ciudad]
+            
+            # Agrega el nombre de cada ciudad a la gráfica
+            plt.text(x0, y0, self.ciudades[2][i_ciudad])
+            
+            for nodo in vecinos:
+                i_nodo = self.ciudades[2].index(nodo)
+                x1 = self.ciudades[0][i_nodo]
+                y1 = self.ciudades[1][i_nodo]
+                
+                if ([[x0,x1],[y0,y1]] not in self.caminos or 
+                    [[x1,x0],[y1,y0]] not in self.caminos):
+                    self.caminos.append([[x0,x1],[y0,y1]])
+                    plt.plot([x0,x1], [y0,y1], 'r', lw=1, color='grey')
+                
+        plt.axis('off')
+        plt.title('Mapa')
