@@ -1,6 +1,7 @@
 
 import threading
 import time
+from graficador import Graficador 
 
 def listRightIndex(alist, value):
     return len(alist) - alist[-1::-1].index(value) -1
@@ -218,6 +219,19 @@ mapa3={
 "Eforie":{"nodes":["Hirsova"],"coord":[707,402]},
 "Giurgiu":{"nodes":["Bucharest"],"coord":[453,433]}
 }
+
+graph = Graficador()
+graph.loadMap(mapa3)
+time.sleep(2)
+graph.setCurrent('Pitesti')
+graph.redrawMap()
+time.sleep(2)
+graph.setVisited('Bucharest')
+graph.redrawMap()
+time.sleep(2)
+graph.setRuta('Neamt')
+graph.redrawMap()
+time.sleep(2)
 
 agent = Agente(mapa2)
 agent.setInicio("Arad")
