@@ -5,7 +5,7 @@ Created on Fri Jan 21 10:23:17 2022
 
 @author: miguel
 """
-
+import time
 
 class Agente:
     def __init__(self, graficador):
@@ -14,10 +14,10 @@ class Agente:
         self.final = ""
         self.posicion_actual = [0,0] # ruta, profundidad
         self.ruta = [[""]]
-        self.ruta_actual = 0
         self.visitados = []
         self.vecinos = []
         self.modoBusqueda = 'profundidad'
+        self.buffer_busqueda = []
         print("Agente creado!")
 
     def setInicio(self, inicio):
@@ -63,29 +63,51 @@ class Agente:
         pos = self.posicion_actual
         if (destino in self.vecinos and destino not in self.ruta[pos[0]]):
             # Down
-            print("1y")
             if ( len(self.ruta[pos[0]]) == (pos[1]+1) ):
-                # Nuevo nodo
+                # Dive in to node
                 self.ruta[pos[0]].append(destino)
                 print("agregue: ", destino)
             new_pos = [pos[0],(pos[1] + 1)]  
             self.setPos(new_pos)
             return True
         else:
-            print("1n")
             if(pos[1] > 0):
-                print(2)
                 if (destino == self.ruta[pos[0]][pos[1]-1]):
                     # Up
-                    print(3)
                     new_pos = [pos[0],(pos[1] - 1)]  
                     self.setPos(new_pos)
                     return True
         return False
+    
+    def moveTo(self, destino):
+        if (destino not in self.vecinos and
+            destino not in self.ruta[self.posicion_actual[0]]):
+            # Cambio de rama, buscar el nodo que tiene como vecino a destino
+            while (destino not in self.vecinos):
+                print(99)
+                time.sleep(0.5)
+                if (self.posicion_actual[1]>0):
+                    new_depth = self.posicion_actual[1]-1
+                    key = self.ruta[self.posicion_actual[0]][new_depth]
+                    print("regresando a:", key)
+                    self.move(key)
+                else:
+                    print("Llegue a inicio sin encontrar la rama")
+                    return False
+            if (destino in self.vecinos):
+                print("CAMBIANDO A NUEVA RUTA :D")
+                
+                depth_i = self.posicion_actual[1] + 1
+                route = self.posicion_actual[0]
+                self.ruta.append(self.ruta[route][:depth_i])
+                self.posicion_actual[0] = route + 1
+                self.move(destino)
                 
             
-        
-    #def startAgent(self):
+    def runSearch(self):
+        self.buffer_busqueda = self.vecinos.copy()
+        while(len(buffer_busqueda)>0):
+            try_node = self.buffer_busqueda.pop()
         
     
     

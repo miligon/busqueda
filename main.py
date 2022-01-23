@@ -9,6 +9,7 @@ import threading
 import time
 from graficador import Graficador 
 from agente import Agente
+from busqueda import Search
 
 mapa3={
 "Arad":{"nodes":["Zerind","Sibiu","Timisoara"],"coord":[67,133]},
@@ -33,6 +34,31 @@ mapa3={
 "Giurgiu":{"nodes":["Bucharest"],"coord":[453,433]}
 }
 
+mapa2 = {"Arad":["Zerind","Sibiu","Timisoara"],
+"Zerind":["Oradea","Arad"],
+"Oradea":["Zerind","Sibiu"],
+"Timisoara":["Lugoj","Arad"],
+"Lugoj":["Timisoara","Mehadia"],
+#"Dobreta":["Mehadia","Craiova"],
+"Dobreta":[],
+"Mehadia":["Lugoj","Dobreta"],
+"Sibiu":["Fagaras","Rimnicu Vilcea","Arad","Oradea"],
+"Fagaras":["Sibiu","Bucharest"],
+"Rimnicu Vilcea":["Sibiu","Pitesti","Craiova"],
+"Craiova":["Pitesti","Rimnicu Vilcea","Dobreta"],
+"Pitesti":["Rimnicu Vilcea","Craiova","Bucharest"],
+"Bucharest":["Fagaras","Pitesti","Giurgiu","Urziceni"],
+"Urziceni":["Bucharest","Hirsova","Vaslui"],
+"Vaslui":["Urziceni","Iasi"],
+"Iasi":["Neamt","Vaslui"],
+"Neamt":["Iasi"],
+"Hirsova":["Urziceni","Eforie"],
+"Eforie":["Hirsova"]
+}
+
+Search("Arad", "Bucharest", mapa2, False)
+Search("Arad", "Bucharest", mapa2, True)
+
 graph = Graficador()
 graph.loadMap(mapa3)
 
@@ -41,12 +67,13 @@ agent.setInicio("Arad")
 agent.setFinal("Eforie")
 #agent.setAmplitud()
 print(agent.move('Zerind'))
-time.sleep(2)
-print(agent.move('Oradea'))
-time.sleep(2)
-print(agent.move('Fagaras'))
-time.sleep(2)
-print(agent.move('Arad'))
-time.sleep(2)
-print(agent.move('Zerind'))
-time.sleep(2)
+time.sleep(0.5)
+print(agent.moveTo('Timisoara'))
+time.sleep(0.5)
+print(agent.moveTo('Sibiu'))
+time.sleep(0.5)
+print(agent.moveTo('Lugoj'))
+time.sleep(0.5)
+print(agent.moveTo('Fagaras'))
+time.sleep(0.5)
+print(agent.moveTo('Rimnicu Vilcea'))
