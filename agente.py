@@ -94,6 +94,7 @@ class Agente:
                 else:
                     print("Llegue a inicio sin encontrar la rama")
                     return False
+                
             if (destino in self.vecinos):
                 print("CAMBIANDO A NUEVA RUTA :D")
                 
@@ -102,12 +103,29 @@ class Agente:
                 self.ruta.append(self.ruta[route][:depth_i])
                 self.posicion_actual[0] = route + 1
                 self.move(destino)
+        else:
+            if (destino in self.vecinos):
+                self.move(destino)
                 
             
     def runSearch(self):
         self.buffer_busqueda = self.vecinos.copy()
-        while(len(buffer_busqueda)>0):
+        while(len(self.buffer_busqueda)>0):
             try_node = self.buffer_busqueda.pop()
+            self.moveTo(try_node)
+            time.sleep(0.5)
+            if (self.final == try_node):
+                print("Llegué a:", try_node)
+                return self.ruta[self.posicion_actual[0]]
+            
+            nodes = self.vecinos.copy()
+            if len(nodes) != 0:
+                for child in nodes:
+                    if (child not in self.visitados):
+                        #self.buffer_busqueda.append(child)
+                        self.buffer_busqueda.insert(0,child)
+                        print(try_node)
+            
         
     
     
