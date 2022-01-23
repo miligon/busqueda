@@ -106,3 +106,6 @@ class Graficador:
         i = self.ciudades[2].index(key)
         return self.ciudades[4][i].copy()
     
+    def getTotalCiudades(self):
+        return len(self.ciudades[2])
+    

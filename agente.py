@@ -24,7 +24,7 @@ class Agente:
         print("Ciudad inicial:", inicio)
         self.inicio = inicio
         self.ruta = [[inicio]]
-        self.setPos(inicio)
+        self.setPos([0,0])
         
     def setFinal(self, final):
         print("Ciudad final:", final)
@@ -52,6 +52,7 @@ class Agente:
         else:
             if (pos == self.posicion_actual):
                 key = self.ruta[pos[0]][pos[1]]
+                self.vecinos = self.graficador.getNodes(key)
                 self.graficador.setCurrent(key)
                 print("No cambio mi posición: ", key)
         
@@ -59,12 +60,29 @@ class Agente:
         self.graficador.redrawMap()
             
     def move(self,destino):
-        if (destino in self.vecinos):
+        pos = self.posicion_actual
+        if (destino in self.vecinos and destino not in self.ruta[pos[0]]):
             # Down
-            self.ruta[pos[0]].append(destino)
-            self.setPos(destino)
-        elif (destino == ruta[actual][-1]):
-            # Up
+            print("1y")
+            if ( len(self.ruta[pos[0]]) == (pos[1]+1) ):
+                # Nuevo nodo
+                self.ruta[pos[0]].append(destino)
+                print("agregue: ", destino)
+            new_pos = [pos[0],(pos[1] + 1)]  
+            self.setPos(new_pos)
+            return True
+        else:
+            print("1n")
+            if(pos[1] > 0):
+                print(2)
+                if (destino == self.ruta[pos[0]][pos[1]-1]):
+                    # Up
+                    print(3)
+                    new_pos = [pos[0],(pos[1] - 1)]  
+                    self.setPos(new_pos)
+                    return True
+        return False
+                
             
         
     #def startAgent(self):
