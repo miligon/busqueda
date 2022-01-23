@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 class Graficador:
     
     def __init__(self):
-        self.ciudades = [[],[],[],[],[]]
+        self.ciudades = [[],[],[],[],[],[]]
         self.caminos = [[[],[]]]
         self.figure, self.axes = plt.subplots()
         
@@ -18,6 +18,7 @@ class Graficador:
         # Obtiene las coordenadas de las ciudades
         for ciudad in mapa:
             coordenada = mapa[ciudad]['coord']
+            children = mapa[ciudad]['nodes']
             self.ciudades[0].append(coordenada[0])
             self.ciudades[1].append(795-coordenada[1])
             self.ciudades[2].append(ciudad)
@@ -26,6 +27,7 @@ class Graficador:
             # orange: visitado
             # darkblue: ruta
             self.ciudades[3].append('grey')
+            self.ciudades[4].append(children)
         
         # Grafica las ciudades
         self.axes = plt.scatter(self.ciudades[0], self.ciudades[1], zorder=500, s=20, color='grey')
@@ -99,3 +101,8 @@ class Graficador:
     def setRuta(self, key):
         i = self.ciudades[2].index(key)
         self.ciudades[3][i] = 'darkblue'
+        
+    def getNodes(self, key):
+        i = self.ciudades[2].index(key)
+        return self.ciudades[4][i].copy()
+    
