@@ -33,6 +33,12 @@ class Agente:
     def setFinal(self, final):
         print("Ciudad final:", final)
         self.final = final
+    
+    def setBehavior(self,modo):
+        if (modo == 'amplitud'):
+            self.modoBusqueda = 'amplitud'
+        else:
+            self.modoBusqueda = 'profundidad'
       
     def setPos(self,key):
         if (key != self.posicion_actual):
@@ -49,10 +55,13 @@ class Agente:
         else:
             if (key == self.posicion_actual):
                 self.graficador.setCurrent(key)
+                print("No cambio mi posición: ", key)
         
+        # Refresca el mapa
         self.graficador.redrawMap()
             
-    
+    #def moveTo(self,key):
+        
     #def startAgent(self):
         
     
