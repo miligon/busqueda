@@ -65,15 +65,19 @@ class Graficador:
     def redrawMap(self):
         #print("redraw")
         self.figure.clf()
-        # Grafica las ciudades
+        
        
         for i in range(len(self.ciudades[0])):
             x0 = self.ciudades[0][i]
             y0 = self.ciudades[1][i]
             c = self.ciudades[3][i]
+            size = 20
+            if (c == 'green'):
+                size = 45
             
+            # Grafica las ciudades
+            self.axes = plt.scatter(x0, y0, zorder=500, s=size, color=c)
             # Agrega el nombre de cada ciudad a la gráfica
-            self.axes = plt.scatter(x0, y0, zorder=500, s=20, color=c)
             self.axes = plt.text(x0, y0, self.ciudades[2][i], zorder=501)
             
         # Grafica las conexiones entre ciudades
@@ -100,7 +104,7 @@ class Graficador:
         
     def setRuta(self, key):
         i = self.ciudades[2].index(key)
-        self.ciudades[3][i] = 'lightgreen'
+        self.ciudades[3][i] = 'green'
         
     def getNodes(self, key):
         i = self.ciudades[2].index(key)
