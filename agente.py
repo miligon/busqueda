@@ -62,9 +62,11 @@ class Agente:
         self.graficador.redrawMap()
 
     def move(self, destino):
+        print("move")
         pos = self.posicion_actual
         if (destino in self.vecinos and destino not in self.ruta[pos[0]]):
             # Down
+            print(1)
             if (len(self.ruta[pos[0]]) == (pos[1]+1)):
                 # Dive in to node
                 self.ruta[pos[0]].append(destino)
@@ -72,14 +74,25 @@ class Agente:
             new_pos = [pos[0], (pos[1] + 1)]
             self.setPos(new_pos)
             return True
-        else:
-            if(pos[1] > 0):
-                if (destino == self.ruta[pos[0]][pos[1]-1]):
-                    # Up
-                    new_pos = [pos[0], (pos[1] - 1)]
-                    self.setPos(new_pos)
-                    return True
+        
+        if(pos[1] > 0):
+            if (destino == self.ruta[pos[0]][pos[1]-1]):
+                # Up
+                print(2)
+                new_pos = [pos[0], (pos[1] - 1)]
+                self.setPos(new_pos)
+                return True
+        
+        if(pos[1]+1 < len(self.ruta[pos[0]])):
+            print(3)
+            if (destino == self.ruta[pos[0]][pos[1]+1]):
+                print(4)
+                # Down existente
+                new_pos = [pos[0], (pos[1] + 1)]
+                self.setPos(new_pos)
+                return True
         return False
+        
 
     def moveTo(self, destino):
         print("moviendo a: ", destino)
@@ -117,17 +130,7 @@ class Agente:
                 
                 nueva_ruta = self.ruta[route][:depth_i]
                 self.ruta.append(nueva_ruta)
-                self.posicion_actual[0] = route + 1
-                pos = [route,(depth_i-1)]
-                print("pos:", pos)
-                if (pos in self.cambios_de_ruta[0]):
-                    i_rutas = self.cambios_de_ruta[0].index(pos)
-                    print("a: ", pos, i_rutas)
-                    self.cambios_de_ruta[1][i_rutas].append([route+1])
-                else:
-                    self.cambios_de_ruta[0].append(pos)
-                    self.cambios_de_ruta[1].append([route, route+1])
-                    
+                self.posicion_actual[0] = route + 1                    
                 self.move(destino)
 
         else:
