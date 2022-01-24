@@ -59,11 +59,11 @@ class Graficador:
         self.axes = plt.axis('off')
         self.axes = plt.title('Mapa')
         #plt.draw()
-        plt.pause(0.5)
+        plt.pause(0.2)
         #plt.show(block=False)
     
     def redrawMap(self):
-        print("redraw")
+        #print("redraw")
         self.figure.clf()
         # Grafica las ciudades
        
@@ -83,7 +83,7 @@ class Graficador:
         self.axes = plt.axis('off')
         self.axes = plt.title('Mapa')
         #plt.show()
-        plt.pause(0.5)
+        plt.pause(0.2)
 
     # grey: inicial
     # red: pos actual
