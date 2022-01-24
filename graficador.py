@@ -59,7 +59,7 @@ class Graficador:
         self.axes = plt.axis('off')
         self.axes = plt.title('Mapa')
         #plt.draw()
-        plt.pause(0.2)
+        plt.pause(0.01)
         #plt.show(block=False)
     
     def redrawMap(self):
@@ -83,7 +83,7 @@ class Graficador:
         self.axes = plt.axis('off')
         self.axes = plt.title('Mapa')
         #plt.show()
-        plt.pause(0.2)
+        plt.pause(0.01)
 
     # grey: inicial
     # red: pos actual
@@ -100,7 +100,7 @@ class Graficador:
         
     def setRuta(self, key):
         i = self.ciudades[2].index(key)
-        self.ciudades[3][i] = 'darkblue'
+        self.ciudades[3][i] = 'lightgreen'
         
     def getNodes(self, key):
         i = self.ciudades[2].index(key)

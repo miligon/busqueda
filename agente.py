@@ -6,6 +6,7 @@ Created on Fri Jan 21 10:23:17 2022
 @author: miguel
 """
 import time
+import threading
 
 
 class Agente:
@@ -23,6 +24,20 @@ class Agente:
         self.padres = []
         print("Agente creado!")
 
+    def reset(self):
+        self.graficador = graficador
+        self.inicio = ""
+        self.final = ""
+        self.posicion_actual = [0, 0]  # ruta, profundidad
+        self.cambios_de_ruta = [[],[]]
+        self.ruta = [[""]]
+        self.visitados = []
+        self.vecinos = []
+        self.modoBusqueda = 'profundidad'
+        self.buffer_busqueda = []
+        self.padres = []
+        print("Agente reinicializado!")
+        
     def setInicio(self, inicio):
         print("Ciudad inicial:", inicio)
         self.inicio = inicio
@@ -176,6 +191,20 @@ class Agente:
                             self.buffer_busqueda.append(child)
                             self.padres.append(try_node)
                             # print(try_node)
-                            
-    def startAgent(self):
-        print("start")
+        return False
+    
+    def showFinalRoute(self, ruta):
+        for ciudad in ruta:
+            self.graficador.setRuta(ciudad)
+            time.sleep(0.1)
+            # Refresca el mapa
+            self.graficador.redrawMap()
+        
+    def runAgent(self):
+        print("Ejecutando Agente . . .")
+        ruta_encontrada = self.runSearch()
+        if (ruta_encontrada != False):
+            self.showFinalRoute(ruta_encontrada)
+        else:
+            print("No encontré ruta alguna al destino")
+        
