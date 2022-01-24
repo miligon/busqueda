@@ -11,6 +11,7 @@ import threading
 
 class Agente:
     def __init__(self, graficador):
+        self.retardos = 0.5
         self.graficador = graficador
         self.inicio = ""
         self.final = ""
@@ -112,7 +113,7 @@ class Agente:
             
             # Cambio de rama, buscar el nodo que tiene como vecino a destino
             while (destino not in self.vecinos):
-                time.sleep(0.1)
+                time.sleep(self.retardos)
                 if (self.posicion_actual[1] > 0):
                     new_depth = self.posicion_actual[1]-1
                     key = self.ruta[self.posicion_actual[0]][new_depth]
@@ -153,7 +154,7 @@ class Agente:
                 if (destino in self.ruta[self.posicion_actual[0]]):
                     # Descender en una ruta en la que se encuentra el destino
                     while (destino not in self.vecinos):
-                        time.sleep(0.1)
+                        time.sleep(self.retardos)
                         if (self.posicion_actual[1] < (len(self.ruta[self.posicion_actual[0]])-1)):
                             new_depth = self.posicion_actual[1]+1
                             key = self.ruta[self.posicion_actual[0]][new_depth]
@@ -170,11 +171,12 @@ class Agente:
         while(len(self.buffer_busqueda) > 0):
             try_node = self.buffer_busqueda.pop()
             padre = self.padres.pop()
+            
             if (padre not in self.ruta[self.posicion_actual[0]]):
                 self.moveTo(padre)
             self.moveTo(try_node)
             
-            time.sleep(0.1)
+            time.sleep(self.retardos)
             if (self.final == try_node):
                 print("ENCONTRE:", try_node)
                 return self.ruta[self.posicion_actual[0]]
@@ -196,7 +198,7 @@ class Agente:
     def showFinalRoute(self, ruta):
         for ciudad in ruta:
             self.graficador.setRuta(ciudad)
-            time.sleep(0.1)
+            time.sleep(self.retardos)
             # Refresca el mapa
             self.graficador.redrawMap()
         
