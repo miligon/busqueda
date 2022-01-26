@@ -7,9 +7,12 @@ Created on Mon Jan 17 18:23:17 2022
 """
 from graficador import Graficador 
 from agente import Agente
+import threading, time
+import sys
+
 
 mapa3={
-"Arad":{"nodes":["Zerind","Sibiu","Timisoara"],"coord":[67,133]},
+"Arad":{"nodes":["Sibiu","Timisoara","Zerind"],"coord":[67,133]},
 "Zerind":{"nodes":["Oradea","Arad"],"coord":[92,80]},
 "Oradea":{"nodes":["Zerind","Sibiu"],"coord":[122,25]},
 "Timisoara":{"nodes":["Lugoj","Arad"],"coord":[72,245]},
@@ -33,26 +36,80 @@ mapa3={
 "Giurgiu":{"nodes":["Bucharest"],"coord":[453,433]}
 }
 
+def showFinalRoute(self, ruta):
+    for ciudad in ruta:
+        self.graficador.setRuta(ciudad)
+        time.sleep(1)
+        # Refresca el mapa
+        self.graficador.redrawMap()
 
-graph = Graficador()
-graph.loadMap(mapa3)
-agent = Agente(graph)
-agent.setInicio("Arad")
-agent.setFinal("Bucharest")
-agent.setBehavior('amplitud')                       
-agent.runAgent()
-input ("\n\nPresione una tecla para continuar ...")
-#agent.setAmplitud()
-# agent.moveTo('Zerind')
-# time.sleep(0.1)
-# agent.moveTo('Timisoara')
-# time.sleep(0.1)
-# agent.moveTo('Sibiu')
-# time.sleep(0.1)
-# agent.moveTo('Timisoara')
-# agent.moveTo('Lugoj')
-# time.sleep(0.1)
-# agent.moveTo('Zerind')
-# agent.moveTo('Oradea')
-# time.sleep(0.1)
-# agent.moveTo('Lugoj')
+def refreshMap():
+    global graph
+    global agentes
+    for agente in agentes:
+        graph.setCurrent(agente.getCurPos())
+        graph.setVisited(agente.getPrevPos())
+    graph.redrawMap()
+
+def refreshData():
+    global graph
+    global agentes
+    for agente in agentes:
+        #print("procesando: ",agente.id)
+        if (agente.state == 'waiting for nodes' and agente.getCurPos() != ""):
+            posicion = agente.getCurPos()
+            #print("Actualizando agente: ",agente.id, posicion, graph.getNodes(posicion))
+            agente.setNewVecinos(graph.getNodes(posicion))
+    return True
+
+def isFinished(agentes):
+    for agente in agentes:
+        if (agente.state != 'finished'):
+            return False
+    return True
+
+def tickAgents(agentes, tiempo):
+    for agente in agentes:
+        agente.runAgent()
+    if ( isFinished(agentes) ):
+        return
+    #threading.Timer(tiempo, tickAgents, (agentes, tiempo)).start()
+
+def newAgent(id, inicio, vecinos, final, modo):
+    agent = Agente(id)
+    agent.setInicio(inicio, vecinos)
+    agent.setFinal(final)                    
+    agent.setBehavior(modo) 
+    return agent
+
+if __name__ == '__main__':
+    graph = Graficador()
+    graph.loadMap(mapa3)
+    
+    agentes = []
+    
+    agent = newAgent(1, "Arad", graph.getNodes("Arad"), "Bucharest", 'amplitud')
+    agentes.append(agent)
+    
+    # agent = newAgent(2, "Arad", graph.getNodes("Arad"), "Vaslui", 'amplitud')
+    # agentes.append(agent)
+    
+    tiempo = 0.1
+    # timer = threading.Timer(tiempo, tickAgents, (agentes, tiempo))
+    # timer.start()
+    
+    while (True):
+        refreshMap()
+        
+        refreshData()
+        
+        time.sleep(0.1)
+        
+        tickAgents(agentes, tiempo)
+        
+        if ( isFinished(agentes) ):
+            refreshMap()
+            sys.exit()
+    
+    
+    

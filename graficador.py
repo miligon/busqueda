@@ -95,16 +95,19 @@ class Graficador:
     # darkblue: ruta
         
     def setCurrent(self, key):
-        i = self.ciudades[2].index(key)
-        self.ciudades[3][i] = 'red'
+        if (key != ""):
+            i = self.ciudades[2].index(key)
+            self.ciudades[3][i] = 'red'
     
     def setVisited(self, key):
-        i = self.ciudades[2].index(key)
-        self.ciudades[3][i] = 'orange'
+        if (key != ""):
+            i = self.ciudades[2].index(key)
+            self.ciudades[3][i] = 'orange'
         
     def setRuta(self, key):
-        i = self.ciudades[2].index(key)
-        self.ciudades[3][i] = 'green'
+        if (key != ""):
+            i = self.ciudades[2].index(key)
+            self.ciudades[3][i] = 'green'
         
     def getNodes(self, key):
         i = self.ciudades[2].index(key)
