@@ -91,7 +91,7 @@ if __name__ == '__main__':
     graph.loadMap(mapa3)
     
     agentes = []
-    
+    # Se crean los agentes y se agregan a la lista
     agent = Agente(1)
     setAgent(agent, "Arad", graph.getNodes("Arad"), "Bucharest", 'profundidad')
     agentes.append(agent)
@@ -100,18 +100,17 @@ if __name__ == '__main__':
     setAgent(agent2, "Arad", graph.getNodes("Arad"), "Bucharest", 'amplitud')
     agentes.append(agent2)
     
+    # Se establece el tiempo para el timer
     tiempo = 1
     timer = threading.Timer(tiempo, tickAgents, (agentes, tiempo))
     timer.start()
-    
     
     while (True):
         
         refreshData()
         
-        time.sleep(0.5)
-        
-        #tickAgents(agentes, tiempo)
+        # Tiempo de refresco de la grafica
+        time.sleep(tiempo/2.0)
         
         if ( isFinished(agentes) ):
             refreshMap()
