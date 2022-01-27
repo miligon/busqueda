@@ -46,9 +46,10 @@ def showFinalRoute(self, ruta):
 def refreshMap():
     global graph
     global agentes
+    graph.resetAgents()
     for agente in agentes:
-        graph.setCurrent(agente.getCurPos())
-        graph.setVisited(agente.getPrevPos())
+        graph.setCurrent(agente.getCurPos(), agente.id)
+        #graph.setVisited(agente.getPrevPos())
     graph.redrawMap()
 
 def refreshData():
@@ -56,10 +57,15 @@ def refreshData():
     global agentes
     for agente in agentes:
         #print("procesando: ",agente.id)
-        if (agente.state == 'waiting for nodes' and agente.getCurPos() != ""):
-            posicion = agente.getCurPos()
-            #print("Actualizando agente: ",agente.id, posicion, graph.getNodes(posicion))
-            agente.setNewVecinos(graph.getNodes(posicion))
+        if (agente.state == 'waiting for nodes' or 
+            agente.state == "wait_returnOne" or 
+            agente.state == "wait_forwardOne"):
+            if (agente.getCurPos() != ""):
+                posicion = agente.getCurPos()
+                print("Actualizando agente: ",agente.id, posicion, graph.getNodes(posicion))
+                agente.setNewVecinos(graph.getNodes(posicion))
+    
+    refreshMap()
     return True
 
 def isFinished(agentes):
@@ -73,14 +79,12 @@ def tickAgents(agentes, tiempo):
         agente.runAgent()
     if ( isFinished(agentes) ):
         return
-    #threading.Timer(tiempo, tickAgents, (agentes, tiempo)).start()
+    threading.Timer(tiempo, tickAgents, (agentes, tiempo)).start()
 
-def newAgent(id, inicio, vecinos, final, modo):
-    agent = Agente(id)
+def setAgent(agent, inicio, vecinos, final, modo):
     agent.setInicio(inicio, vecinos)
     agent.setFinal(final)                    
     agent.setBehavior(modo) 
-    return agent
 
 if __name__ == '__main__':
     graph = Graficador()
@@ -88,24 +92,26 @@ if __name__ == '__main__':
     
     agentes = []
     
-    agent = newAgent(1, "Arad", graph.getNodes("Arad"), "Bucharest", 'amplitud')
+    agent = Agente(1)
+    setAgent(agent, "Arad", graph.getNodes("Arad"), "Bucharest", 'profundidad')
     agentes.append(agent)
     
-    # agent = newAgent(2, "Arad", graph.getNodes("Arad"), "Vaslui", 'amplitud')
-    # agentes.append(agent)
+    agent2 = Agente(2)
+    setAgent(agent2, "Arad", graph.getNodes("Arad"), "Bucharest", 'amplitud')
+    agentes.append(agent2)
     
-    tiempo = 0.1
-    # timer = threading.Timer(tiempo, tickAgents, (agentes, tiempo))
-    # timer.start()
+    tiempo = 1
+    timer = threading.Timer(tiempo, tickAgents, (agentes, tiempo))
+    timer.start()
+    
     
     while (True):
-        refreshMap()
         
         refreshData()
         
-        time.sleep(0.1)
+        time.sleep(0.5)
         
-        tickAgents(agentes, tiempo)
+        #tickAgents(agentes, tiempo)
         
         if ( isFinished(agentes) ):
             refreshMap()

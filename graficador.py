@@ -72,8 +72,9 @@ class Graficador:
             y0 = self.ciudades[1][i]
             c = self.ciudades[3][i]
             size = 20
-            if (c == 'green'):
-                size = 45
+            if (c != 'grey'):
+                size = 40
+            
             
             # Grafica las ciudades
             self.axes = plt.scatter(x0, y0, zorder=500, s=size, color=c)
@@ -93,11 +94,17 @@ class Graficador:
     # red: pos actual
     # yellow: visitado
     # darkblue: ruta
-        
-    def setCurrent(self, key):
+    
+    def resetAgents(self):
+        for i in range(len(self.ciudades[3])):
+            self.ciudades[3][i] = 'grey'
+    
+    def setCurrent(self, key, agente):
+        colors = ['red','blue','green','yellow','black','orange']
         if (key != ""):
             i = self.ciudades[2].index(key)
-            self.ciudades[3][i] = 'red'
+            self.ciudades[3][i] = colors[agente]
+            return
     
     def setVisited(self, key):
         if (key != ""):
@@ -108,6 +115,7 @@ class Graficador:
         if (key != ""):
             i = self.ciudades[2].index(key)
             self.ciudades[3][i] = 'green'
+            
         
     def getNodes(self, key):
         i = self.ciudades[2].index(key)

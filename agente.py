@@ -5,9 +5,6 @@ Created on Fri Jan 21 10:23:17 2022
 
 @author: miguel
 """
-import time
-import threading
-
 
 class Agente:
     def __init__(self, id):
@@ -24,10 +21,18 @@ class Agente:
         self.buffer_busqueda = []
         self.padres = []
         self.movimientos = []
+        self.destino = ""
+        self.move_pending = ""
+        self.move_pending2 = ""
+        self.change_route = False
         self.state = 'idle'
+        self.busqueda_state = 'busqueda_1'
+        self.padre = ""
+        self.try_node = ""
         print("Agente creado!")
 
     def reset(self):
+        self.id = id
         self.inicio = ""
         self.final = ""
         self.posicion_actual = [0, 0]  # ruta, profundidad
@@ -40,7 +45,14 @@ class Agente:
         self.buffer_busqueda = []
         self.padres = []
         self.movimientos = []
+        self.destino = ""
+        self.move_pending = ""
+        self.move_pending2 = ""
+        self.change_route = False
         self.state = 'idle'
+        self.busqueda_state = 'busqueda_1'
+        self.padre = ""
+        self.try_node = ""
         print("Agente reinicializado!")
         
     def getFinalRoute(self):
@@ -88,9 +100,19 @@ class Agente:
                 self.visitados.append(key_anterior)
             self.prev_pos = key_anterior
             self.vecinos = []
+            print("setpos: ", self.state)
+            if (self.state == "returnOne"):
+                self.state = "wait_returnOne"
+                print("Nueva posicion: ", key, self.state)
+                return
+            
+            if (self.state == "forwardOne"):
+                self.state = "wait_forwardOne"
+                print("Nueva posicion: ", key, self.state)
+                return
+            
             self.state = "waiting for nodes"
-            print("Nueva posicion: ", key)
-
+            print("Nueva posicion: ", key, self.state)
         else:
             if (pos == self.posicion_actual):
                 key = self.ruta[pos[0]][pos[1]]
@@ -99,15 +121,16 @@ class Agente:
 
 
     def move(self, destino):
-        self.state = 'moving'
+        #self.state = 'moving'
         print("Moviendo a: ", destino)
         pos = self.posicion_actual
         if (destino in self.vecinos and destino not in self.ruta[pos[0]]):
             # Down
+            #print("move: ", len(self.ruta[pos[0]]), (pos[1]+1))
             if (len(self.ruta[pos[0]]) == (pos[1]+1)):
                 # Dive in to node
                 self.ruta[pos[0]].append(destino)
-                #print("agregue: ", destino)
+                print("agregue: ", destino)
             new_pos = [pos[0], (pos[1] + 1)]
             self.setPos(new_pos)
             return True
@@ -125,120 +148,210 @@ class Agente:
                 new_pos = [pos[0], (pos[1] + 1)]
                 self.setPos(new_pos)
                 return True
+        
         return False
     
-    def moveTo(self, destino):
-        self.state = 'calculating'
-        print("Calculando movimientos ...")
-        if (destino not in self.vecinos and
-                destino not in self.ruta[self.posicion_actual[0]]):
+    def __returnOne(self):
+        self.state = "returnOne"
+        print("return: ", self.destino, self.vecinos, self.getCurPos())
+        if (self.destino not in self.vecinos):
             
-            # Cambio de rama, buscar el nodo que tiene como vecino a destino
-            while (destino not in self.vecinos):
-                if (self.posicion_actual[1] > 0):
-                    new_depth = self.posicion_actual[1]-1
-                    key = self.ruta[self.posicion_actual[0]][new_depth]
-                    #print("regresando a:", key)
-                    #self.move(key)
-                    self.movimientos.insert(0,key)
-                else:
-                    #print("Llegue a inicio sin encontrar la rama")
-                    self.state = "idle"
-                    return False
-                
-                if (destino not in self.vecinos):
-                    for route in self.ruta:
-                        depth_i = self.posicion_actual[1]
-                        key = self.ruta[self.posicion_actual[0]][depth_i]
-                        # Verifica si en la ciudad actual existen bifurcaciones
-                        # y si el destino se encuentre en dichas bifurcaciones
-                        if ((depth_i+1) < len(route)):
-                            if (key == route[depth_i] and destino in route[depth_i+1:]):
-                                #print("Cambiando a ruta existente")
-                                route_num = self.ruta.index(route)
-                                self.posicion_actual[0]=route_num
-                                self.moveTo(destino)
-                                return
-
-            if (destino in self.vecinos):
+            if (self.posicion_actual[1] > 0):
+                new_depth = self.posicion_actual[1]-1
+                key = self.ruta[self.posicion_actual[0]][new_depth]
+                print("regresando a:", key)
+                self.move(key)
+            else:
+                print("Llegue a inicio sin encontrar la ciudad en vecinos")
+            
+            self.__changeRoute2()
+        else:
+            self.__changeRoute1()
+            
+    def __changeRoute2(self):
+        #print("__changeRoute2")
+        if (self.destino not in self.vecinos):
+            for route in self.ruta:
+                depth_i = self.posicion_actual[1]
+                key = self.ruta[self.posicion_actual[0]][depth_i]
+                # Verifica si en la ciudad actual existen bifurcaciones
+                # y si el destino se encuentre en dichas bifurcaciones
+                if ((depth_i+1) < len(route)):
+                    if (key == route[depth_i] and self.destino in route[depth_i+1:]):
+                        print("Cambiando a ruta existente")
+                        route_num = self.ruta.index(route)
+                        self.posicion_actual[0]=route_num
+                        self.state = 'moveTo'
+                        return
+        self.status = "returnOne"
+        
+    def __changeRoute1(self):
+        #print("__changeRoute1")
+        self.state = "changeRoute1"
+        if (self.destino in self.vecinos):
                 # Si el destino se encuentra en los vecinos de la ciudad
                 # Se crea una nueva ruta
-                #print("CAMBIANDO A NUEVA RUTA :D")
+                print("CAMBIANDO A NUEVA RUTA :D")
                 depth_i = self.posicion_actual[1] + 1
                 route = self.posicion_actual[0]
                 nueva_ruta = self.ruta[route][:depth_i]
                 self.ruta.append(nueva_ruta)
-                self.posicion_actual[0] = route + 1                    
-                #self.move(destino)
-                self.movimientos.insert(0,destino)
-                self.state = "idle"
-        else:
-            if (destino in self.vecinos):
-                #self.move(destino)
-                self.movimientos.insert(0,destino)
-                self.state = "idle"
-            else:
-                if (destino in self.ruta[self.posicion_actual[0]]):
-                    # Descender en una ruta en la que se encuentra el destino
-                    while (destino not in self.vecinos):
-                        if (self.posicion_actual[1] < (len(self.ruta[self.posicion_actual[0]])-1)):
-                            new_depth = self.posicion_actual[1]+1
-                            key = self.ruta[self.posicion_actual[0]][new_depth]
-                            #print("avanzando a:", key)
-                            #self.move(key)
-                            self.movimientos.insert(0,key)
-                        else:
-                            #print("Llegue a inicio sin encontrar la rama")
-                            self.state = "idle"
-                            return False
-                    #self.move(destino)
-                    self.movimientos.insert(0,destino)
-                    self.state = "idle"
-
-    def runSearch(self):
-        if (self.state == 'idle'):
-            if ( len(self.movimientos) > 0 ):
-                self.move(self.movimientos.pop())
+                print("nueva ruta: ", nueva_ruta)
+                self.posicion_actual[0] = len(self.ruta)-1
+                self.move(self.destino)
                 
-                if (self.final == self.getCurPos()):
-                    print("ENCONTRE: ", self.getCurPos())
-                    self.state = 'finished'
-                    return
+    def __forwardOne(self):
+        self.state = "forwardOne"
+        print("forward: ", self.destino, self.vecinos, self.getCurPos())
+        if (self.destino != self.getCurPos()):
+            if (self.destino not in self.vecinos):
+                if (self.posicion_actual[1] < (len(self.ruta[self.posicion_actual[0]])-1)):
+                    new_depth = self.posicion_actual[1]+1
+                    key = self.ruta[self.posicion_actual[0]][new_depth]
+                    print("avanzando a:", key)
+                    self.move(key)
+                else:
+                    print("Llegue al final sin encontrar la rama")
+                    return False
+            else:
+                self.state = "idle"
+                self.move(self.destino)
+        else:
+            self.state = "idle"
+        
+    def moveTo(self):
+        #self.state = 'calculating'
+        print("Calculando movimientos ...", self.destino, self.vecinos, 
+              self.ruta[self.posicion_actual[0]], 
+              self.ruta[self.posicion_actual[0]][self.posicion_actual[1]])
+        if (self.destino not in self.vecinos and
+                self.destino not in self.ruta[self.posicion_actual[0]]):
+            
+            self.move_pending = self.destino
+            self.__returnOne()
+        else:
+            if (self.destino in self.vecinos):
+                    self.move(self.destino)
                     
             else:
-                if ( len(self.buffer_busqueda) > 0):
-                    try_node = self.buffer_busqueda.pop()
-                    padre = self.padres.pop()
+                if (self.destino in self.ruta[self.posicion_actual[0]]):
+                    # Descender en una ruta en la que se encuentra el destino
+                    self.move_pending = self.destino
+                    self.__forwardOne()
                     
-                    if (padre not in self.ruta[self.posicion_actual[0]]):
-                        self.moveTo(padre)
-                    self.moveTo(try_node)
+
+    def __busqueda_2(self):
+        nodes = self.vecinos.copy()
+        if len(nodes) != 0:
+            for child in nodes:
+                if (child not in self.visitados and child != self.padre):
+                    if (self.modoBusqueda == 'amplitud'):
+                        self.buffer_busqueda.insert(0, child)
+                        self.padres.insert(0,self.try_node)
+                        
+                    else:
+                        self.buffer_busqueda.append(child)
+                        self.padres.append(self.try_node)
+                        # print(try_node)                    
+
+    def runSearch(self): 
+        if (self.state == 'moveTo'):
+            self.moveTo()    
+            return
+            
+        if (self.state == 'returnOne'):
+            self.__returnOne()
+            return
+            
+        if (self.state == 'forwardOne'):
+            self.__forwardOne()
+            return
         
-                    nodes = self.vecinos.copy()
-                    if len(nodes) != 0:
-                        for child in nodes:
-                            if (child not in self.visitados and child != padre):
-                                if (self.modoBusqueda == 'amplitud'):
-                                    self.buffer_busqueda.insert(0, child)
-                                    self.padres.insert(0,try_node)
-                                    
-                                else:
-                                    self.buffer_busqueda.append(child)
-                                    self.padres.append(try_node)
-                                    # print(try_node)
+        if (self.state == 'changeRoute2'):
+            self.__changeRoute2()
+            return
+            
+        if (self.state == 'changeRoute1'):
+            self.__changeRoute1()
+            return
+            
+        if (self.state == 'idle'):
+            
+            print("idle:", self.move_pending,",", self.move_pending2, len(self.buffer_busqueda), self.destino)
+            
+            if ( self.move_pending != ""):
+                
+                if (self.getCurPos() == self.move_pending):
+                    self.move_pending = ""
+                    print(1)
+                else:
+                    self.destino = self.move_pending
+                    self.moveTo()
+                    print(2)
+                return
+            
+            if ( self.move_pending2 != "" and self.move_pending == ""):
+                self.move_pending = self.move_pending2
+                self.move_pending2 = ""
+                return
+                
+            if (self.final == self.getCurPos()):
+                print("ENCONTRE: ", self.getCurPos())
+                self.state = 'finished'
+                return
+            
+            if (self.busqueda_state == 'busqueda_1'):
+                if ( len(self.buffer_busqueda) > 0 and 
+                    self.move_pending == "" and self.move_pending2 == "" ):
+                    
+                    self.try_node = self.buffer_busqueda.pop()
+                    self.padre = self.padres.pop()
+                    
+                    if (self.padre not in self.ruta[self.posicion_actual[0]]):
+                        self.destino = self.padre
+                        self.moveTo()
+                        self.move_pending2 = self.try_node
+                    else:
+                        self.destino = self.try_node
+                        self.moveTo()
+                        
+                    self.busqueda_state = 'busqueda_2'
+                return
+                    
+            if (self.busqueda_state == 'busqueda_2'):
+                if ( self.move_pending == "" and self.move_pending2 == ""):
+                    self.__busqueda_2()
+                    self.busqueda_state = 'busqueda_1'
+                    return
                                     
                                     
         if (self.state == 'finished'):
-            print("Trabajo finalizado, ruta final: ", self.getFinalRoute())
+            print("Trabajo finalizado, agente: ", self.id,", ruta final: ", self.getFinalRoute())
+            return
+            
+        if (self.state == 'wait_returnOne'):
+            if (self.vecinos != []):
+                self.state = 'returnOne'
+            else:
+                print("returnOne, Esperando información acerca del nuevo nodo . . .")
+            return
+                
+        if (self.state == 'wait_forwardOne'):
+            if (self.vecinos != []):
+                self.state = 'forwardOne'
+            else:
+                print("forwardOne, Esperando información acerca del nuevo nodo . . .")
+            return
             
         if (self.state == 'waiting for nodes'):
             if (self.vecinos != []):
                 self.state = 'idle'
             else:
-                print("Esperando información acerca del nuevo nodo . . .")
+                print("waiting, Esperando información acerca del nuevo nodo . . .")
+            return
         
         
     def runAgent(self):
-        print("Tick agente: ", self.id)
+        print("Tick agente: ", self.id, self.state)
         self.runSearch()
         
